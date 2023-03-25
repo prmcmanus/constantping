@@ -14,23 +14,25 @@ set success=0
 set failure=0
 
 :loop
+REM Get the current date/time
+set "datetime=!date:~6,4!-!date:~3,2!-!date:~0,2!_!time::=-!"
+set "datetime=!datetime:.=_!"
+
 REM Ping the specified IP address once with a timeout of 1 second
 ping %ip_address% -n 1 -w 1000 > nul
 
 REM Check the errorlevel to see if the ping failed
 if errorlevel 1 (
-    REM If the ping failed, increment the failure counter and get the current date/time
+    REM If the ping failed, increment the failure counter 
     set /a failure+=1
-    set "datetime=!date:~6,4!-!date:~3,2!-!date:~0,2!_!time::=-!"
-    set "datetime=!datetime:.=_!"
 
     REM Create the Results directory if it doesn't exist
     if not exist Results mkdir Results
 
     REM Output the network information to separate files with the current date/time in the filename
-    netsh wlan show all > Results\netsh_wlan_show_all_%datetime%.txt
-    netsh wlan show interface > Results\netsh_wlan_show_interface_%datetime%.txt
-    ipconfig /all > Results\ipconfig_all_%datetime%.txt
+    netsh wlan show all       > Results\%datetime%_netsh_wlan_show_all.txt
+    netsh wlan show interface > Results\%datetime%_netsh_wlan_show_interface.txt
+    ipconfig /all             > Results\%datetime%_ipconfig_all.txt
 ) else (
     REM If the ping succeeded, increment the success counter
     set /a success+=1
